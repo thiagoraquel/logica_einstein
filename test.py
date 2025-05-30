@@ -83,36 +83,78 @@ def constraint(arc_x, value_x, arc_y, value_y):
   return True  # Categorias diferentes sempre são válidas
 
 def revise(domain, arc_x, arc_y):
+  # Indica se algum valor foi removido do domínio de arc_x
   revised = False
+
+  # Conjunto de valores que serão removidos do domínio de arc_x
   to_remove = set()
 
+  # Para cada valor possível de arc_x
   for value_x in domain[arc_x]:
-    # Se nenhum value_y em arc_y satisfaz a restrição -> remove value_x do domínio arc_x
+    # Verifica se existe ao menos um value_y em arc_y tal que (value_x, value_y) satisfaça a restrição
+    # Se nenhum value_y satisfaz, então value_x não é válido e deve ser removido
     if not any(constraint(arc_x, value_x, arc_y, value_y) for value_y in domain[arc_y]):
-      # Se não existir nenhum value_y em arc_y compatível, então value_x é removido do domínio de arc_x
+      # Marca value_x para remoção do domínio de arc_x
       to_remove.add(value_x)
+      # Indica que o domínio de arc_x foi modificado
       revised = True
 
+  # Remove do domínio de arc_x todos os valores que não têm suporte em arc_y
   domain[arc_x] -= to_remove
 
-  # Retorna true se removeu algum valor.
+  # Retorna True se houve qualquer modificação no domínio (algum valor removido)
   return revised
 
 def ac3(dom, arcs):
+  # Inicializa a fila de arcos (restrições binárias) a serem verificados
   queue = deque(arcs)
-  while queue:
 
-    # arcs são do tipo (x, y) ex: Casa1_beb -> Casa2_beb
-    # portanto arc_x será Casa1_beb e arc_y será Casa2_beb
+  # Enquanto houver arcos na fila para processar
+  while queue:
+    # Remove o próximo arco da fila
+    # arcs são do tipo (x, y), como ('Casa1_beb', 'Casa2_beb')
     arc_x, arc_y = queue.popleft()
     
+    # Verifica se o domínio de arc_x precisa ser revisado em relação a arc_y
     if revise(dom, arc_x, arc_y):
+      # Se o domínio de arc_x ficou vazio após a revisão, o problema é inconsistente
       if not dom[arc_x]:
-        return False  # Algum domínio ficou vazio → inconsistente
-      for xk in dom:
-        if xk != arc_x and (xk.split('_')[1] == arc_x.split('_')[1]):
-          queue.append((xk, arc_x))
+        return False
+
+      # Para todas as outras variáveis da mesma categoria (mesmo sufixo, como "_beb") que arc_x
+      for other_var in dom:
+        # Evita revisitar o próprio arc_x
+        # Garante que other_var seja da mesma categoria que arc_x
+        if other_var != arc_x and (other_var.split('_')[1] == arc_x.split('_')[1]):
+          # Adiciona o arco (other_var, arc_x) de volta à fila para verificar a consistência
+          queue.append((other_var, arc_x))
+
+  
+  # Se todos os arcos foram processados sem inconsistência, retorna True
   return True
+
+# Busca por força bruta
+# não mexer, apenas usar para verificar casos
+def brute_force(domains):
+  assignment = {}
+  # Coletar lista de variáveis
+  vars_list = list(domains.keys())
+  def backtrack(idx):
+    if idx == len(vars_list):
+      return assignment.copy()
+    var = vars_list[idx]
+    for value in domains[var]:
+      # check consistency with current assignment
+      if all(constraint(var, value, other, assignment[other]) and \
+             constraint(other, assignment[other], var, value)
+             for other in assignment):
+        assignment[var] = value
+        result = backtrack(idx + 1)
+        if result:
+          return result
+        del assignment[var]
+    return None
+  return backtrack(0)
 
   # Função principal
 def main():
@@ -132,6 +174,14 @@ def main():
   else:
     print("AC-3 detectou inconsistência nos domínios.")
   # até a parte de cima está funcionando
+
+   # Find a complete solution
+  solution = brute_force(dom)
+  if solution:
+    print("Solution found:")
+    for v in sorted(solution): print(f"{v}: {solution[v]}")
+  else:
+    print("No solution found")
 
 if __name__ == "__main__":
   main()
