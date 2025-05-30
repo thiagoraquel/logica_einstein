@@ -77,8 +77,59 @@ def print_arcs(arcs):
 def constraint(arc_x, value_x, arc_y, value_y):
 
   # Se são da mesma categoria (ex: "_cor"), não podem ter o mesmo valor
+  #funfa
   if arc_x.split('_')[1] == arc_y.split('_')[1]:
     return value_x != value_y  # Impede repetição de mesmo valor
+  
+  # mesma casa
+  if arc_x.split('_')[0] == arc_y.split('_')[0]:
+    # Dica 2: O inglês mora na casa vermelha
+    #funfa
+    if ('nac' in arc_x and value_x == 'Ingles' and 'cor' in arc_y and value_y != 'Vermelho') or \
+       ('cor' in arc_x and value_x == 'Vermelho' and 'nac' in arc_y and value_y != 'Ingles'):
+      return False
+
+    # Dica 3: O sueco tem cachorro como animal de estimação
+    #funfa
+    if ('nac' in arc_x and value_x == 'Sueco' and 'pet' in arc_y and value_y != 'Cachorro') or \
+       ('pet' in arc_x and value_x == 'Cachorro' and 'nac' in arc_y and value_y != 'Sueco'):
+      return False
+    
+    # Dica 4: O dinamarques bebe chá
+    #funfa
+    if ('nac' in arc_x and value_x == 'Dinamarques' and 'beb' in arc_y and value_y != 'Cha') or \
+       ('beb' in arc_x and value_x == 'Cha' and 'nac' in arc_y and value_y != 'Dinamarques'):
+      return False
+    
+    # Dica 6: O homem que vive na casa verde bebe café
+    #funfa
+    if ('cor' in arc_x and value_x == 'Verde' and 'beb' in arc_y and value_y != 'Cafe') or \
+       ('beb' in arc_x and value_x == 'Cafe' and 'cor' in arc_y and value_y != 'Verde'):
+      return False
+    
+    # Dica 7: O homem que fuma Pall Mall cria pássaros
+    #funfa
+    if ('cig' in arc_x and value_x == 'Pall Mall' and 'pet' in arc_y and value_y != 'Passaro') or \
+       ('pet' in arc_x and value_x == 'Passaro' and 'cig' in arc_y and value_y != 'Pall Mall'):
+      return False
+    
+    # Dica 8: O homem que vive na casa amarela fuma Dunhill
+    #funfa
+    if ('cor' in arc_x and value_x == 'Amarelo' and 'cig' in arc_y and value_y != 'Dunhill') or \
+       ('cig' in arc_x and value_x == 'Dunhill' and 'cor' in arc_y and value_y != 'Amarelo'):
+      return False
+    
+    # Dica 12: O homem que fuma Blue Master bebe cerveja
+    #funfa
+    if ('cig' in arc_x and value_x == 'Blue Master' and 'beb' in arc_y and value_y != 'Cerveja') or \
+       ('beb' in arc_x and value_x == 'Cerveja' and 'cig' in arc_y and value_y != 'Blue Master'):
+      return False
+    
+    # Dica 13: O alemão fuma Prince
+    #funfa
+    if ('nac' in arc_x and value_x == 'Alemao' and 'cig' in arc_y and value_y != 'Prince') or \
+       ('cig' in arc_x and value_x == 'Prince' and 'nac' in arc_y and value_y != 'Alemao'):
+      return False
 
   return True  # Categorias diferentes sempre são válidas
 
@@ -160,7 +211,7 @@ def brute_force(domains):
 def main():
   dom = copy.deepcopy(domain_template)
 
-  print_arcs(arcs)
+  #print_arcs(arcs)
 
   # Dica 1: O noruegues mora na primeira casa
   dom['Casa1_nac'] = {"Noruegues"}
