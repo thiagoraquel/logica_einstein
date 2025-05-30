@@ -100,6 +100,7 @@ def constraint(arc_x, value_x, arc_y, value_y):
     return value_x != value_y  # Impede repetição de mesmo valor
 
   # Dica 5 (v2): A casa verde fica IMEDIATAMENTE à esquerda da casa branca
+  # tmb não funciona, mas não tão importante assim
   #if ('cor' in arc_x and value_x == 'Verde' and 'cor' in arc_y and value_y == 'Branco'):
     #pos_x = int(arc_x[4])
     #pos_y = int(arc_y[4])
@@ -117,91 +118,91 @@ def constraint(arc_x, value_x, arc_y, value_y):
 
   
   # mesma casa
-  #if arc_x.split('_')[0] == arc_y.split('_')[0]:
+  if arc_x.split('_')[0] == arc_y.split('_')[0]:
     # Dica 2: O inglês mora na casa vermelha
     #funfa
-    #if ('nac' in arc_x and value_x == 'Ingles' and 'cor' in arc_y and value_y != 'Vermelho') or \
-       #('cor' in arc_x and value_x == 'Vermelho' and 'nac' in arc_y and value_y != 'Ingles'):
-      #return False
+    if ('nac' in arc_x and value_x == 'Ingles' and 'cor' in arc_y and value_y != 'Vermelho') or \
+       ('cor' in arc_x and value_x == 'Vermelho' and 'nac' in arc_y and value_y != 'Ingles'):
+      return False
 
     # Dica 3: O sueco tem cachorro como animal de estimação
     #funfa
-    #if ('nac' in arc_x and value_x == 'Sueco' and 'pet' in arc_y and value_y != 'Cachorro') or \
-       #('pet' in arc_x and value_x == 'Cachorro' and 'nac' in arc_y and value_y != 'Sueco'):
-      #return False
+    if ('nac' in arc_x and value_x == 'Sueco' and 'pet' in arc_y and value_y != 'Cachorro') or \
+       ('pet' in arc_x and value_x == 'Cachorro' and 'nac' in arc_y and value_y != 'Sueco'):
+      return False
     
     # Dica 4: O dinamarques bebe chá
     #funfa
-    #if ('nac' in arc_x and value_x == 'Dinamarques' and 'beb' in arc_y and value_y != 'Cha') or \
-       #('beb' in arc_x and value_x == 'Cha' and 'nac' in arc_y and value_y != 'Dinamarques'):
-      #return False
+    if ('nac' in arc_x and value_x == 'Dinamarques' and 'beb' in arc_y and value_y != 'Cha') or \
+       ('beb' in arc_x and value_x == 'Cha' and 'nac' in arc_y and value_y != 'Dinamarques'):
+      return False
     
     # Dica 6: O homem que vive na casa verde bebe café
     #funfa
-    #if ('cor' in arc_x and value_x == 'Verde' and 'beb' in arc_y and value_y != 'Cafe') or \
-       #('beb' in arc_x and value_x == 'Cafe' and 'cor' in arc_y and value_y != 'Verde'):
-      #return False
+    if ('cor' in arc_x and value_x == 'Verde' and 'beb' in arc_y and value_y != 'Cafe') or \
+       ('beb' in arc_x and value_x == 'Cafe' and 'cor' in arc_y and value_y != 'Verde'):
+      return False
     
     # Dica 7: O homem que fuma Pall Mall cria pássaros
     #funfa
-    #if ('cig' in arc_x and value_x == 'Pall Mall' and 'pet' in arc_y and value_y != 'Passaro') or \
-       #('pet' in arc_x and value_x == 'Passaro' and 'cig' in arc_y and value_y != 'Pall Mall'):
-      #return False
+    if ('cig' in arc_x and value_x == 'Pall Mall' and 'pet' in arc_y and value_y != 'Passaro') or \
+       ('pet' in arc_x and value_x == 'Passaro' and 'cig' in arc_y and value_y != 'Pall Mall'):
+      return False
     
     # Dica 8: O homem que vive na casa amarela fuma Dunhill
     #funfa
-    #if ('cor' in arc_x and value_x == 'Amarelo' and 'cig' in arc_y and value_y != 'Dunhill') or \
-       #('cig' in arc_x and value_x == 'Dunhill' and 'cor' in arc_y and value_y != 'Amarelo'):
-      #return False
+    if ('cor' in arc_x and value_x == 'Amarelo' and 'cig' in arc_y and value_y != 'Dunhill') or \
+       ('cig' in arc_x and value_x == 'Dunhill' and 'cor' in arc_y and value_y != 'Amarelo'):
+      return False
     
     # Dica 12: O homem que fuma Blue Master bebe cerveja
     #funfa
-    #if ('cig' in arc_x and value_x == 'Blue Master' and 'beb' in arc_y and value_y != 'Cerveja') or \
-       #('beb' in arc_x and value_x == 'Cerveja' and 'cig' in arc_y and value_y != 'Blue Master'):
-      #return False
+    if ('cig' in arc_x and value_x == 'Blue Master' and 'beb' in arc_y and value_y != 'Cerveja') or \
+       ('beb' in arc_x and value_x == 'Cerveja' and 'cig' in arc_y and value_y != 'Blue Master'):
+      return False
     
     # Dica 13: O alemão fuma Prince
     #funfa
-    #if ('nac' in arc_x and value_x == 'Alemao' and 'cig' in arc_y and value_y != 'Prince') or \
-       #('cig' in arc_x and value_x == 'Prince' and 'nac' in arc_y and value_y != 'Alemao'):
-      #return False
+    if ('nac' in arc_x and value_x == 'Alemao' and 'cig' in arc_y and value_y != 'Prince') or \
+       ('cig' in arc_x and value_x == 'Prince' and 'nac' in arc_y and value_y != 'Alemao'):
+      return False
 
   # Dica 10: O homem que fuma blends é vizinho imediato do que tem gatos
   #funfa
-  #if ('cig' in arc_x and value_x == 'Blends' and 'pet' in arc_y and value_y == 'Gato') or \
-    #('pet' in arc_x and value_x == 'Gato' and 'cig' in arc_y and value_y == 'Blends'):
+  if ('cig' in arc_x and value_x == 'Blends' and 'pet' in arc_y and value_y == 'Gato') or \
+    ('pet' in arc_x and value_x == 'Gato' and 'cig' in arc_y and value_y == 'Blends'):
     # Verifica se as casas são vizinhas (posição das casas)
-    #pos_x = int(arc_x[4])
-    #pos_y = int(arc_y[4])
-    #if abs(pos_x - pos_y) != 1:  # não são vizinhos imediatas
-      #return False
+    pos_x = int(arc_x[4])
+    pos_y = int(arc_y[4])
+    if abs(pos_x - pos_y) != 1:  # não são vizinhos imediatas
+      return False
   
   # Dica 11: O homem que tem um cavalo vive ao lado do que fuma dunhill
   #funfa
-  #if ('pet' in arc_x and value_x == 'Cavalo' and 'cig' in arc_y and value_y == 'Dunhill') or \
-    #('cig' in arc_x and value_x == 'Dunhill' and 'pet' in arc_y and value_y == 'Cavalo'):
-    #pos_x = int(arc_x[4])
-    #pos_y = int(arc_y[4])
-    #if abs(pos_x - pos_y) != 1:
-      #return False
+  if ('pet' in arc_x and value_x == 'Cavalo' and 'cig' in arc_y and value_y == 'Dunhill') or \
+    ('cig' in arc_x and value_x == 'Dunhill' and 'pet' in arc_y and value_y == 'Cavalo'):
+    pos_x = int(arc_x[4])
+    pos_y = int(arc_y[4])
+    if abs(pos_x - pos_y) != 1:
+      return False
   
   # Dica 14: O norueguês vive ao lado da casa azul
   #funfa
-  #if ('nac' in arc_x and value_x == 'Noruegues' and 'cor' in arc_y and value_y == 'Azul') or \
-    #('cor' in arc_x and value_x == 'Azul' and 'nac' in arc_y and value_y == 'Noruegues'):
-    #pos_x = int(arc_x[4])
-    #pos_y = int(arc_y[4])
-    #if abs(pos_x - pos_y) != 1:
-      #return False
+  if ('nac' in arc_x and value_x == 'Noruegues' and 'cor' in arc_y and value_y == 'Azul') or \
+    ('cor' in arc_x and value_x == 'Azul' and 'nac' in arc_y and value_y == 'Noruegues'):
+    pos_x = int(arc_x[4])
+    pos_y = int(arc_y[4])
+    if abs(pos_x - pos_y) != 1:
+      return False
   
   # Dica 15: O homem que fuma blends é vizinho do que bebe água
   #funfa
-  #if ('cig' in arc_x and value_x == 'Blends' and 'beb' in arc_y and value_y == 'Agua') or \
-     #('beb' in arc_x and value_x == 'Agua' and 'cig' in arc_y and value_y == 'Blends'):
-    #pos_x = int(arc_x[4])
-    #pos_y = int(arc_y[4])
-    #if abs(pos_x - pos_y) != 1:
-      #return False
+  if ('cig' in arc_x and value_x == 'Blends' and 'beb' in arc_y and value_y == 'Agua') or \
+     ('beb' in arc_x and value_x == 'Agua' and 'cig' in arc_y and value_y == 'Blends'):
+    pos_x = int(arc_x[4])
+    pos_y = int(arc_y[4])
+    if abs(pos_x - pos_y) != 1:
+      return False
 
   return True  # Categorias diferentes sempre são válidas
 
