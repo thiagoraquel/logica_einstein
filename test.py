@@ -45,13 +45,11 @@ domain_template = {
 # Restrições binárias (arestas) para AC-3 (todos pares de variáveis diferentes)
 arcs = set()
 
-# Restrições binárias (arestas) para AC-3 (todos pares de variáveis diferentes)
-arcs = set()
-
 # Categorias disponíveis
 categorias = ['cor', 'nac', 'beb', 'pet', 'cig']
 
 # Adiciona arcos entre variáveis da mesma categoria (para garantir que não se repitam)
+# Exemplo: Casa1_cor -> Casa2_cor
 for cat in categorias:
   vars_cat = [f"Casa{i}_{cat}" for i in range(1, 6)]
   for i in range(len(vars_cat)):
@@ -60,19 +58,12 @@ for cat in categorias:
         arcs.add((vars_cat[i], vars_cat[j]))
 
 # Adiciona arcos entre categorias diferentes na mesma casa (para aplicar dicas como inglês na casa vermelha)
+# Exemplo: Casa1_cor -> Casa1_beb
 for i in range(1, 6):
   for cat1 in categorias:
     for cat2 in categorias:
       if cat1 != cat2:
         arcs.add((f"Casa{i}_{cat1}", f"Casa{i}_{cat2}"))
-
-for i in range(1, 6):
-  for j in range(1, 6):
-    if i != j:
-      for cat1 in categorias:
-        for cat2 in categorias:
-          if cat1 != cat2:
-            arcs.add((f"Casa{i}_{cat1}", f"Casa{j}_{cat2}"))
 
 def print_arcs(arcs):
   print("Arcos (restrições binárias):")
@@ -127,7 +118,7 @@ def ac3(dom, arcs):
 def main():
   dom = copy.deepcopy(domain_template)
 
-  #print_arcs(arcs)
+  print_arcs(arcs)
 
   # Dica 1: O noruegues mora na primeira casa
   dom['Casa1_nac'] = {"Noruegues"}
@@ -142,6 +133,8 @@ def main():
     print("AC-3 detectou inconsistência nos domínios.")
   # até a parte de cima está funcionando
 
-
 if __name__ == "__main__":
   main()
+
+#tem que ter uma função constraint_positions com os assignments
+#na versão anterior deu erro ao verificar a dica "a casa verde está a esquerda (qualquer posição) da casa branca"
