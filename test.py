@@ -257,27 +257,56 @@ def ac3(dom, arcs):
   # Se todos os arcos foram processados sem inconsistência, retorna True
   return True
 
-# Busca por força bruta
-# não mexer, apenas usar para verificar casos
+# Busca por backtracking
 def brute_force(domains):
+  # Dicionário (dict) vazio, armazena a atribuição de valores a variáveis
+  #assignment = {'Casa1_cor': 'Vermelho', 'Casa2_cor': 'Verde', 'Casa1_nac': 'Ingles',...}
   assignment = {}
-  # Coletar lista de variáveis
+  
+  # Lista de strings, representando cada variável do problema
+  #['Casa1_cor', 'Casa2_cor', 'Casa3_cor', 'Casa4_cor', 'Casa5_cor',
+  #'Casa1_nac', 'Casa2_nac', 'Casa3_nac', 'Casa4_nac', 'Casa5_nac',
+  #'Casa1_cig', 'Casa2_cig', 'Casa3_cig', 'Casa4_cig', 'Casa5_cig',
+  #'Casa1_pet', 'Casa2_pet', 'Casa3_pet', 'Casa4_pet', 'Casa5_pet',
+  #'Casa1_beb', 'Casa2_beb', 'Casa3_beb', 'Casa4_beb', 'Casa5_beb']
   vars_list = list(domains.keys())
+
+  # Função recursiva, explorando possiveis atribuições de valores às variáveis
+  # idx é o índice da variável atual na lista vars_list, que estamos tentando atribuir um valor
   def backtrack(idx):
+    # Se idx chegou no final de vars_list, então todas as variáveis já foram atribuídas
     if idx == len(vars_list):
-      return assignment.copy()
+      # Encerra a recursão, retorna a cópia da atribuição completa (solução válida) 
+      return assignment.copy() 
+
+    # Pega a variável atual (ex: 'Casa3_cor') Para tentar atribuir um valor a ela
     var = vars_list[idx]
+
+    # Para cada valor possível da variável var, tenta fazer uma atribuição por tentativa
     for value in domains[var]:
-      # check consistency with current assignment
+      # Para cada variável other já atribuída em assignment, verifica se a atribuição
+      # var = value é compatível com ela.
+      # Se qualquer uma dessa verificações falhar, a tentativa é rejeitada
+      # e o loop continua com outro valor em domains[var]
       if all(constraint(var, value, other, assignment[other]) and \
              constraint(other, assignment[other], var, value)
              for other in assignment):
+        
+        # Se passar pelas constraints, atribui value à variável var no dicionário assignment
         assignment[var] = value
+        # Chama backtrack para a próxima variável
         result = backtrack(idx + 1)
+        # Se o result retornou uma solução (não none), para a recursão 
+        # e retorna a primeira solução encontrada
         if result:
           return result
+        # Se a recursão falhou (não levou a uma solução), remove a atribuição de var
+        # no backtrack para tentar outro valor
         del assignment[var]
+    # Se nenhum valor do domínio de var dá solução válida, retorna none, sinaliza que 
+    # o caminho atual está inválido
     return None
+  # Inicia busca com backtrack pela a primeira variável
   return backtrack(0)
 
   # Função principal
