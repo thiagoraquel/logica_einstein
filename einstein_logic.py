@@ -94,6 +94,18 @@ def constraint(arc_x, value_x, arc_y, value_y):
        ('cig' in arc_x and value_x == 'Prince' and 'nac' in arc_y and value_y != 'Alemao'):
       return False
 
+  # Dica 05: casa verde está imediatamente à esquerda da casa branca
+  #funfa
+  if ('cor' in arc_x and value_x == 'Verde' and 'cor' in arc_y and value_y == 'Branco') or \
+    ('cor' in arc_x and value_x == 'Branco' and 'cor' in arc_y and value_y == 'Verde'):
+    pos_x = int(arc_x[4])
+    pos_y = int(arc_y[4])
+    # Verde deve estar imediatamente à esquerda da Branca
+    if value_x == 'Verde' and pos_x != pos_y - 1:
+      return False
+    if value_x == 'Branco' and pos_y != pos_x - 1:
+      return False
+
   # Dica 10: O homem que fuma blends é vizinho imediato do que tem gatos
   #funfa
   if ('cig' in arc_x and value_x == 'Blends' and 'pet' in arc_y and value_y == 'Gato') or \
@@ -129,18 +141,6 @@ def constraint(arc_x, value_x, arc_y, value_y):
     pos_x = int(arc_x[4])
     pos_y = int(arc_y[4])
     if abs(pos_x - pos_y) != 1:
-      return False
-    
-  # Dica 05: casa verde está imediatamente à esquerda da casa branca
-  #funfa
-  if ('cor' in arc_x and value_x == 'Verde' and 'cor' in arc_y and value_y == 'Branco') or \
-    ('cor' in arc_x and value_x == 'Branco' and 'cor' in arc_y and value_y == 'Verde'):
-    pos_x = int(arc_x[4])
-    pos_y = int(arc_y[4])
-    # Verde deve estar imediatamente à esquerda da Branca
-    if value_x == 'Verde' and pos_x != pos_y - 1:
-      return False
-    if value_x == 'Branco' and pos_y != pos_x - 1:
       return False
     
   # Se são da mesma categoria (ex: "_cor"), não podem ter o mesmo valor
