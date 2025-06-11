@@ -9,38 +9,20 @@ vars_cig = ['Casa1_cig', 'Casa2_cig', 'Casa3_cig', 'Casa4_cig', 'Casa5_cig']
 vars_pet = ['Casa1_pet', 'Casa2_pet', 'Casa3_pet', 'Casa4_pet', 'Casa5_pet']
 vars_all = vars_nac + vars_cor + vars_cig + vars_pet + vars_beb
 
-# Domínios iniciais
-domain_template = {
-  'Casa1_cor': {'Branco', 'Verde', 'Azul', 'Amarelo', 'Vermelho'},
-  'Casa2_cor': {'Branco', 'Verde', 'Azul', 'Amarelo', 'Vermelho'},
-  'Casa3_cor': {'Branco', 'Verde', 'Azul', 'Amarelo', 'Vermelho'},
-  'Casa4_cor': {'Branco', 'Verde', 'Azul', 'Amarelo', 'Vermelho'},
-  'Casa5_cor': {'Branco', 'Verde', 'Azul', 'Amarelo', 'Vermelho'},
-
-  'Casa1_nac': {'Noruegues', 'Ingles', 'Alemao', 'Sueco', 'Dinamarques'},
-  'Casa2_nac': {'Noruegues', 'Ingles', 'Alemao', 'Sueco', 'Dinamarques'},
-  'Casa3_nac': {'Noruegues', 'Ingles', 'Alemao', 'Sueco', 'Dinamarques'},
-  'Casa4_nac': {'Noruegues', 'Ingles', 'Alemao', 'Sueco', 'Dinamarques'},
-  'Casa5_nac': {'Noruegues', 'Ingles', 'Alemao', 'Sueco', 'Dinamarques'},
-
-  'Casa1_cig': {'Dunhill', 'Blends', 'Pall Mall', 'Prince', 'Blue Master'},
-  'Casa2_cig': {'Dunhill', 'Blends', 'Pall Mall', 'Prince', 'Blue Master'},
-  'Casa3_cig': {'Dunhill', 'Blends', 'Pall Mall', 'Prince', 'Blue Master'},
-  'Casa4_cig': {'Dunhill', 'Blends', 'Pall Mall', 'Prince', 'Blue Master'},
-  'Casa5_cig': {'Dunhill', 'Blends', 'Pall Mall', 'Prince', 'Blue Master'},
-
-  'Casa1_pet': {'Cavalo', 'Peixe', 'Passaro', 'Cachorro', 'Gato'},
-  'Casa2_pet': {'Cavalo', 'Peixe', 'Passaro', 'Cachorro', 'Gato'},
-  'Casa3_pet': {'Cavalo', 'Peixe', 'Passaro', 'Cachorro', 'Gato'},
-  'Casa4_pet': {'Cavalo', 'Peixe', 'Passaro', 'Cachorro', 'Gato'},
-  'Casa5_pet': {'Cavalo', 'Peixe', 'Passaro', 'Cachorro', 'Gato'},
-
-  'Casa1_beb': {'Cha', 'Agua', 'Leite', 'Cafe', 'Cerveja'},
-  'Casa2_beb': {'Cha', 'Agua', 'Leite', 'Cafe', 'Cerveja'},
-  'Casa3_beb': {'Cha', 'Agua', 'Leite', 'Cafe', 'Cerveja'},
-  'Casa4_beb': {'Cha', 'Agua', 'Leite', 'Cafe', 'Cerveja'},
-  'Casa5_beb': {'Cha', 'Agua', 'Leite', 'Cafe', 'Cerveja'},
+# definições iniciais
+categories = {
+    'cor': ['Branco', 'Verde', 'Azul', 'Amarelo', 'Vermelho'],
+    'nac': ['Noruegues', 'Ingles', 'Alemao', 'Sueco', 'Dinamarques'],
+    'cig': ['Dunhill', 'Blends', 'Pall Mall', 'Prince', 'Blue Master'],
+    'pet': ['Cavalo', 'Peixe', 'Passaro', 'Cachorro', 'Gato'],
+    'beb': ['Cha', 'Agua', 'Leite', 'Cafe', 'Cerveja'],
 }
+
+domain_template = {}
+for cat, values in categories.items():
+    for i in range(1, 6):
+        var = f'Casa{i}_{cat}'
+        domain_template[var] = set(values)
 
 # Restrições binárias (arestas) para AC-3 (todos pares de variáveis diferentes)
 arcs = set()
@@ -289,7 +271,6 @@ def main():
       print(f"{var}: {dom[var]}")
   else:
     print("AC-3 detectou inconsistência nos domínios.")
-  # até a parte de cima está funcionando
 
    # Find a complete solution
   solution = brute_force(dom)
@@ -301,6 +282,3 @@ def main():
 
 if __name__ == "__main__":
   main()
-
-#tem que ter uma função constraint_positions com os assignments
-#na versão anterior deu erro ao verificar a dica "a casa verde está a esquerda (qualquer posição) da casa branca"
