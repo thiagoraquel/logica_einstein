@@ -258,8 +258,6 @@ def brute_force(domains):
 def main():
   dom = copy.deepcopy(domain_template)
 
-  #print_arcs(arcs)
-
   # Dica 1: O noruegues mora na primeira casa
   dom['Casa1_nac'] = {"Noruegues"}
   # Dica 9: O homem da casa do meio bebe leite
