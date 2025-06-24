@@ -212,11 +212,12 @@ def get_user_constraints(dom):
         print("\nEscolha o tipo de restrição a adicionar:")
         print("1. Atributos na mesma casa (ex: O Inglês mora na casa Vermelha)")
         print("2. Atributos em casas vizinhas (ex: A casa Azul é vizinha da casa do Norueguês)")
-        print("3. Posição exata (ex: O Norueguês mora na Casa 1)")
+        print("3. Relação 'está em' (ex: O Norueguês mora na Casa 1)")
         print("4. Relação 'imediatamente à esquerda de' (ex: A casa Verde está imediatamente à esquerda da Branca)")
         print("5. Relação 'imediatamente à direita de' (ex: A casa Verde está imediatamente à direita da Branca)")
         print("6. Relação 'à esquerda de' (qualquer posição) (ex: A casa Verde está à esquerda (qualquer posição) da Branca)")
-        print("7. Relação 'à direita de' (qualquer posição) (ex: A casa Verde está à direita (qualquer posição) da Branca)")                        
+        print("7. Relação 'à direita de' (qualquer posição) (ex: A casa Verde está à direita (qualquer posição) da Branca)")
+        print("8. Relação 'não está em' (ex: o Norueguês não está na casa 1)")                        
         print("\nDigite 'S' para solucionar o problema com as restrições atuais.")
 
         choice = input("Sua escolha: ").strip().lower()
@@ -304,6 +305,20 @@ def get_user_constraints(dom):
             left_val = get_input_from_options(f"Valor para '{left_cat}'", categories[left_cat])
             user_constraints.append({'type': 'right_of', 'left_cat': left_cat, 'left_val': left_val, 'right_cat': right_cat, 'right_val': right_val})
             print(f"✅ Restrição adicionada: 'A casa com {left_cat} {left_val} está à direita (qualquer posição) da casa com {right_cat} {right_val}'.")
+
+        elif choice == '8': # Posição Impossível (Exclusão)
+            print_options()
+            print("-- Nova Restrição: Posição Impossível --")
+            pos = int(get_input_from_options("Número da casa", [str(i) for i in range(1, 6)]))
+            cat = get_input_from_options("Categoria do atributo", list(categories.keys()))
+            val = get_input_from_options(f"Valor que '{cat}' NÃO PODE SER", categories[cat])
+            
+            var_name = f'Casa{pos}_{cat}'
+            if val in dom[var_name]:
+                dom[var_name].discard(val)
+                print(f"✅ Restrição de exclusão adicionada: '{val}' foi removido do domínio de '{var_name}'.")
+            else:
+                print(f"ℹ️ Informação: O valor '{val}' já não estava no domínio de '{var_name}'. Nenhuma alteração feita.")
 
         else:
             print("Escolha inválida. Por favor, tente novamente.")
