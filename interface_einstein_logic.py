@@ -148,6 +148,8 @@ def ac3(dom, arcs):
             if not dom[arc_x]:
                 return False
             # Otimização: Re-adicionar apenas arcos relevantes
+            # detalhe: aqui só funciona se os arcs tiverem todos os casos
+            # em compensação é mais eficiente)
             for var_k in vars_all:
                 if var_k != arc_y and (var_k, arc_x) in arcs:
                     queue.append((var_k, arc_x))
