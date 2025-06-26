@@ -1,6 +1,7 @@
 from collections import deque
 import copy
 import time
+import random
 
 # --- ESTRUTURAS DE DADOS GLOBAIS ---
 
@@ -40,6 +41,16 @@ for var1 in vars_all:
             arcs.add((var1, var2))
 
 # --- LÓGICA DE VERIFICAÇÃO DE RESTRIÇÕES (MODIFICADA) ---
+
+def remove_borda_dominios(dom, cat_x, val_x, cat_y, val_y):
+    """
+    Remove val_x da casa 5 e val_y da casa 1, com suas respectivas categorias.
+    Usado para otimizar domínios em relações com orientação (esquerda/direita).
+    """
+    var_x = f"Casa5_{cat_x}"
+    var_y = f"Casa1_{cat_y}"
+    dom[var_x].discard(val_x)
+    dom[var_y].discard(val_y)
 
 def constraint(arc_x, value_x, arc_y, value_y):
     """
@@ -179,15 +190,19 @@ def print_horizontal(assignment):
 
 def brute_force(domains):
     assignment = {}
-    vars_list = sorted(list(domains.keys()), key=lambda v: len(domains[v]))
+    #vars_list = sorted(list(domains.keys()), key=lambda v: len(domains[v]))
+    vars_list = list(domains.keys())
+    random.shuffle(vars_list)
 
     def backtrack(idx):
-        if idx == len(vars_list):
-            print_horizontal(assignment)
-            input("✅ Solução completa encontrada! Pressione Enter para continuar.")
+        if len(assignment) == len(domains):
+            #print_horizontal(assignment);input("✅ Solução completa encontrada! Pressione Enter para continuar.")
             return assignment.copy()
 
-        var = vars_list[idx]
+        # Escolhe a variável com menor domínio entre as não atribuídas
+        unassigned = [v for v in domains if v not in assignment]
+        var = min(unassigned, key=lambda v: len(domains[v]))
+
         # Tenta valores na ordem para consistência
         for value in sorted(list(domains[var])):
             is_consistent = True
@@ -198,14 +213,12 @@ def brute_force(domains):
             
             if is_consistent:
                 assignment[var] = value
-                print_horizontal(assignment)
-                input(f"Tentando {var} = {value} ... Pressione Enter para continuar.")
+                #print_horizontal(assignment);input(f"Tentando {var} = {value} ... Pressione Enter para continuar.")
                 result = backtrack(idx + 1)
                 if result:
                     return result
                 del assignment[var]
-                print_horizontal(assignment)
-                input(f"⏪ Backtracking de {var} = {value} ... Pressione Enter para continuar.")
+                #print_horizontal(assignment);input(f"⏪ Backtracking de {var} = {value} ... Pressione Enter para continuar.")
         return None
     return backtrack(0)
 
@@ -362,21 +375,26 @@ def test_instance(rules, description=""):
     
     # Aplica as regras fornecidas
     for rule in rules:
-        if rule['type'] == 'same_house':
+        if rule['type'] in {'same_house', 'neighbor', 'neighbor_left_of', 'neighbor_right_of', 'left_of', 'right_of'}:
             user_constraints.append(rule)
-        elif rule['type'] == 'neighbor':
-            user_constraints.append(rule)
-        elif rule['type'] == 'neighbor_left_of':
-            user_constraints.append(rule)
-        elif rule['type'] == 'neighbor_right_of':
-            user_constraints.append(rule)
-        elif rule['type'] == 'left_of':
-            user_constraints.append(rule)
-        elif rule['type'] == 'right_of':
-            user_constraints.append(rule)
+
+        # Aplica otimização de domínios para relações com orientação esquerda/direita
+        if rule['type'] in {'neighbor_left_of', 'left_of'}:
+            print("  ➤ Otimizando domínio (removendo bordas à esquerda)")
+            remove_borda_dominios(dom, rule['left_cat'], rule['left_val'], rule['right_cat'], rule['right_val'])
+            print(f"    Domínio Casa1_{rule['right_cat']}: {dom[f'Casa1_{rule['right_cat']}']}")
+            print(f"    Domínio Casa5_{rule['left_cat']}: {dom[f'Casa5_{rule['left_cat']}']}")
+
+        elif rule['type'] in {'neighbor_right_of', 'right_of'}:
+            print("  ➤ Otimizando domínio (removendo bordas à direita)")
+            remove_borda_dominios(dom, rule['right_cat'], rule['right_val'], rule['left_cat'], rule['left_val'])
+            print(f"    Domínio Casa1_{rule['left_cat']}: {dom[f'Casa1_{rule['left_cat']}']}")
+            print(f"    Domínio Casa5_{rule['right_cat']}: {dom[f'Casa5_{rule['right_cat']}']}")
+
         elif rule['type'] == 'position':
             var = f"Casa{rule['pos']}_{rule['cat']}"
             dom[var] = {rule['val']}
+
         elif rule['type'] == 'not_position':
             var = f"Casa{rule['pos']}_{rule['cat']}"
             dom[var].discard(rule['val'])
@@ -413,7 +431,19 @@ exemplo_regras = [
     {'type': 'left_of', 'left_cat': 'cor', 'left_val': 'Verde', 'right_cat': 'cor', 'right_val': 'Branco'},
 ]
 
-empty = []
+empty = [
+    {'type': 'neighbor_left_of', 'left_cat': 'beb', 'left_val': 'Leite', 'right_cat': 'cor', 'right_val': 'Amarelo'}
+]
+
+empty2 = [
+    {'type': 'position', 'cat': 'beb', 'val': 'Leite', 'pos': 5},
+    {'type': 'position', 'cat': 'cig', 'val': 'Prince', 'pos': 4},
+    {'type': 'position', 'cat': 'pet', 'val': 'Gato', 'pos': 5}
+]
+
+empty3 = [
+    {'type': 'neighbor', 'cat1': 'beb', 'val1': 'Cerveja', 'cat2': 'cor', 'val2': 'Vermelho'}
+]
 
 einstein_rules = [
     {'type': 'same_house', 'cat1': 'nac', 'val1': 'Ingles', 'cat2': 'cor', 'val2': 'Vermelho'},
@@ -434,4 +464,4 @@ einstein_rules = [
 ]
 
 # Rodar experimento automaticamente
-test_instance(exemplo_regras, "Instância de teste - Einstein simplificado")
+test_instance(empty, "Instância de teste - Einstein simplificado")
