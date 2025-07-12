@@ -190,21 +190,24 @@ def print_horizontal(assignment):
 
 def brute_force(domains):
     assignment = {}
-    #vars_list = sorted(list(domains.keys()), key=lambda v: len(domains[v]))
-    vars_list = list(domains.keys())
-    random.shuffle(vars_list)
 
-    def backtrack(idx):
+    def backtrack():
         if len(assignment) == len(domains):
             #print_horizontal(assignment);input("✅ Solução completa encontrada! Pressione Enter para continuar.")
             return assignment.copy()
 
         # Escolhe a variável com menor domínio entre as não atribuídas
+        # Em caso de empate (mesmo tamanho de domínio), desempata aleatoriamente
         unassigned = [v for v in domains if v not in assignment]
+        random.shuffle(unassigned)  # evita ordem fixa entre categorias como 'beb', 'cig', etc
         var = min(unassigned, key=lambda v: len(domains[v]))
 
-        # Tenta valores na ordem para consistência
-        for value in sorted(list(domains[var])):
+        # Embaralha os valores possíveis para evitar sempre tentar em ordem alfabética
+        values = list(domains[var])
+        random.shuffle(values)
+
+        # Tenta os valores na ordem embaralhada
+        for value in values:
             is_consistent = True
             for other in assignment:
                 if not constraint(var, value, other, assignment[other]):
@@ -214,13 +217,14 @@ def brute_force(domains):
             if is_consistent:
                 assignment[var] = value
                 #print_horizontal(assignment);input(f"Tentando {var} = {value} ... Pressione Enter para continuar.")
-                result = backtrack(idx + 1)
+                result = backtrack()
                 if result:
                     return result
                 del assignment[var]
                 #print_horizontal(assignment);input(f"⏪ Backtracking de {var} = {value} ... Pressione Enter para continuar.")
         return None
-    return backtrack(0)
+
+    return backtrack()
 
 # --- INTERFACE COM O USUÁRIO (NOVA FUNCIONALIDADE) ---
 
@@ -380,16 +384,16 @@ def test_instance(rules, description=""):
 
         # Aplica otimização de domínios para relações com orientação esquerda/direita
         if rule['type'] in {'neighbor_left_of', 'left_of'}:
-            print("  ➤ Otimizando domínio (removendo bordas à esquerda)")
+            #print("  ➤ Otimizando domínio (removendo bordas à esquerda)")
             remove_borda_dominios(dom, rule['left_cat'], rule['left_val'], rule['right_cat'], rule['right_val'])
-            print(f"    Domínio Casa1_{rule['right_cat']}: {dom[f'Casa1_{rule['right_cat']}']}")
-            print(f"    Domínio Casa5_{rule['left_cat']}: {dom[f'Casa5_{rule['left_cat']}']}")
+            #print(f"    Domínio Casa1_{rule['right_cat']}: {dom[f'Casa1_{rule['right_cat']}']}")
+            #print(f"    Domínio Casa5_{rule['left_cat']}: {dom[f'Casa5_{rule['left_cat']}']}")
 
         elif rule['type'] in {'neighbor_right_of', 'right_of'}:
-            print("  ➤ Otimizando domínio (removendo bordas à direita)")
+            #print("  ➤ Otimizando domínio (removendo bordas à direita)")
             remove_borda_dominios(dom, rule['right_cat'], rule['right_val'], rule['left_cat'], rule['left_val'])
-            print(f"    Domínio Casa1_{rule['left_cat']}: {dom[f'Casa1_{rule['left_cat']}']}")
-            print(f"    Domínio Casa5_{rule['right_cat']}: {dom[f'Casa5_{rule['right_cat']}']}")
+            #print(f"    Domínio Casa1_{rule['left_cat']}: {dom[f'Casa1_{rule['left_cat']}']}")
+            #print(f"    Domínio Casa5_{rule['right_cat']}: {dom[f'Casa5_{rule['right_cat']}']}")
 
         elif rule['type'] == 'position':
             var = f"Casa{rule['pos']}_{rule['cat']}"
@@ -415,36 +419,37 @@ def test_instance(rules, description=""):
             pos = int(var[4])
             cat = var.split('_')[1]
             casas[pos][cat] = value
-        for i in range(1, 6):
-            print(f"\n--- Casa {i} ---")
-            for cat in sorted(casas[i]):
-                print(f"  {cat.capitalize():<12}: {casas[i][cat]}")
+        #for i in range(1, 6):
+            #print(f"\n--- Casa {i} ---")
+            #for cat in sorted(casas[i]):
+                #print(f"  {cat.capitalize():<12}: {casas[i][cat]}")
         print(f"✅ Solução encontrada em {elapsed:.4f} segundos")
     else:
         print(f"❌ Nenhuma solução encontrada. Tempo: {elapsed:.4f} segundos")
 
-# Exemplo de instância simplificada do problema de Einstein
-exemplo_regras = [
-    {'type': 'same_house', 'cat1': 'nac', 'val1': 'Noruegues', 'cat2': 'cor', 'val2': 'Amarelo'},
-    {'type': 'position', 'cat': 'beb', 'val': 'Leite', 'pos': 3},
-    {'type': 'same_house', 'cat1': 'cor', 'val1': 'Verde', 'cat2': 'beb', 'val2': 'Cafe'},
-    {'type': 'left_of', 'left_cat': 'cor', 'left_val': 'Verde', 'right_cat': 'cor', 'right_val': 'Branco'},
-]
-
-empty = [
+# este teste é para brecar o modelo que tenta atribuir variáveis no mesmo padrão sempre
+simple_test = [
     {'type': 'neighbor_left_of', 'left_cat': 'beb', 'left_val': 'Leite', 'right_cat': 'cor', 'right_val': 'Amarelo'}
 ]
 
-empty2 = [
-    {'type': 'position', 'cat': 'beb', 'val': 'Leite', 'pos': 5},
-    {'type': 'position', 'cat': 'cig', 'val': 'Prince', 'pos': 4},
-    {'type': 'position', 'cat': 'pet', 'val': 'Gato', 'pos': 5}
+# sem nenhuma regra de restrição
+empty = []
+
+# funcionando
+ten_rules = [
+    {'type': 'same_house', 'cat1': 'nac', 'val1': 'Dinamarques', 'cat2': 'cig', 'val2': 'Dunhill'},
+    {'type': 'same_house', 'cat1': 'cor', 'val1': 'Azul', 'cat2': 'pet', 'val2': 'Gato'},
+    {'type': 'same_house', 'cat1': 'beb', 'val1': 'Agua', 'cat2': 'nac', 'val2': 'Sueco'},
+    {'type': 'position', 'cat': 'cor', 'val': 'Verde', 'pos': 2},
+    {'type': 'not_position', 'cat': 'cig', 'val': 'Prince', 'pos': 5},
+    {'type': 'neighbor', 'cat1': 'pet', 'val1': 'Cavalo', 'cat2': 'beb', 'val2': 'Cerveja'},
+    {'type': 'neighbor', 'cat1': 'cor', 'val1': 'Amarelo', 'cat2': 'nac', 'val2': 'Alemao'},
+    {'type': 'neighbor_left_of', 'left_cat': 'cig', 'left_val': 'Blends', 'right_cat': 'beb', 'right_val': 'Cafe'},
+    {'type': 'left_of', 'left_cat': 'pet', 'left_val': 'Passaro', 'right_cat': 'cor', 'right_val': 'Vermelho'},
+    {'type': 'not_position', 'cat': 'beb', 'val': 'Cha', 'pos': 1},
 ]
 
-empty3 = [
-    {'type': 'neighbor', 'cat1': 'beb', 'val1': 'Cerveja', 'cat2': 'cor', 'val2': 'Vermelho'}
-]
-
+#funcionando
 einstein_rules = [
     {'type': 'same_house', 'cat1': 'nac', 'val1': 'Ingles', 'cat2': 'cor', 'val2': 'Vermelho'},
     {'type': 'same_house', 'cat1': 'nac', 'val1': 'Sueco', 'cat2': 'pet', 'val2': 'Cachorro'},
@@ -463,5 +468,75 @@ einstein_rules = [
     {'type': 'neighbor', 'cat1': 'cig', 'val1': 'Blends', 'cat2': 'beb', 'val2': 'Agua'},
 ]
 
+#funcionando
+new_twenty_rules = [
+    # As 10 regras aleatórias que você já tinha:
+    {'type': 'same_house', 'cat1': 'nac', 'val1': 'Dinamarques', 'cat2': 'cig', 'val2': 'Dunhill'},
+    {'type': 'same_house', 'cat1': 'cor', 'val1': 'Azul', 'cat2': 'pet', 'val2': 'Gato'},
+    {'type': 'same_house', 'cat1': 'beb', 'val1': 'Agua', 'cat2': 'nac', 'val2': 'Sueco'},
+    {'type': 'position', 'cat': 'cor', 'val': 'Verde', 'pos': 2},
+    {'type': 'not_position', 'cat': 'cig', 'val': 'Prince', 'pos': 5},
+    {'type': 'neighbor', 'cat1': 'pet', 'val1': 'Cavalo', 'cat2': 'beb', 'val2': 'Cerveja'},
+    {'type': 'neighbor', 'cat1': 'cor', 'val1': 'Amarelo', 'cat2': 'nac', 'val2': 'Alemao'},
+    {'type': 'neighbor_left_of', 'left_cat': 'cig', 'left_val': 'Blends', 'right_cat': 'beb', 'right_val': 'Cafe'},
+    {'type': 'left_of', 'left_cat': 'pet', 'left_val': 'Passaro', 'right_cat': 'cor', 'right_val': 'Vermelho'},
+    {'type': 'not_position', 'cat': 'beb', 'val': 'Cha', 'pos': 1},
+
+    # + As 10 regras adicionais que acabei de fornecer:
+    {'type': 'same_house', 'cat1': 'beb', 'val1': 'Cafe', 'cat2': 'pet', 'val2': 'Peixe'},
+    {'type': 'same_house', 'cat1': 'nac', 'val1': 'Alemao', 'cat2': 'cor', 'val2': 'Branco'},
+    {'type': 'position', 'cat': 'cig', 'val': 'Pall Mall', 'pos': 3},
+    {'type': 'not_position', 'cat': 'cor', 'val': 'Azul', 'pos': 1},
+    {'type': 'not_position', 'cat': 'pet', 'val': 'Cachorro', 'pos': 2},
+    {'type': 'not_position', 'cat': 'nac', 'val': 'Sueco', 'pos': 4},
+
+    {'type': 'neighbor', 'cat1': 'cig', 'val1': 'Blue Master', 'cat2': 'nac', 'val2': 'Ingles'},
+    {'type': 'neighbor', 'cat1': 'pet', 'val1': 'Passaro', 'cat2': 'beb', 'val2': 'Leite'},
+    {'type': 'neighbor_right_of', 'left_cat': 'cor', 'left_val': 'Vermelho', 'right_cat': 'beb', 'right_val': 'Agua'},
+    # sem esta regra abaixo demora mais!
+    #{'type': 'right_of', 'left_cat': 'beb', 'left_val': 'Cerveja', 'right_cat': 'nac', 'right_val': 'Dinamarques'},
+]
+
+#funcionando
+twenty_rules_without_solution = [
+    # As 10 regras anteriores (aleatórias)
+    {'type': 'same_house', 'cat1': 'nac', 'val1': 'Dinamarques', 'cat2': 'cig', 'val2': 'Dunhill'},
+    {'type': 'same_house', 'cat1': 'cor', 'val1': 'Azul', 'cat2': 'pet', 'val2': 'Gato'},
+    {'type': 'same_house', 'cat1': 'beb', 'val1': 'Agua', 'cat2': 'nac', 'val2': 'Sueco'},
+    {'type': 'position', 'cat': 'cor', 'val': 'Verde', 'pos': 2},
+    {'type': 'not_position', 'cat': 'cig', 'val': 'Prince', 'pos': 5},
+    {'type': 'neighbor', 'cat1': 'pet', 'val1': 'Cavalo', 'cat2': 'beb', 'val2': 'Cerveja'},
+    {'type': 'neighbor', 'cat1': 'cor', 'val1': 'Amarelo', 'cat2': 'nac', 'val2': 'Alemao'},
+    {'type': 'neighbor_left_of', 'left_cat': 'cig', 'left_val': 'Blends', 'right_cat': 'beb', 'right_val': 'Cafe'},
+    {'type': 'left_of', 'left_cat': 'pet', 'left_val': 'Passaro', 'right_cat': 'cor', 'right_val': 'Vermelho'},
+    {'type': 'not_position', 'cat': 'beb', 'val': 'Cha', 'pos': 1},
+
+    # Novas 10 regras adicionais (aleatórias)
+    # 3x 'same_house'
+    {'type': 'same_house', 'cat1': 'cig', 'val1': 'Pall Mall', 'cat2': 'beb', 'val2': 'Leite'},
+    {'type': 'same_house', 'cat1': 'pet', 'val1': 'Peixe', 'cat2': 'nac', 'val2': 'Ingles'},
+    {'type': 'same_house', 'cat1': 'cor', 'val1': 'Branco', 'cat2': 'cig', 'val2': 'Blue Master'},
+
+    # 2x 'position' ou 'not_position'
+    {'type': 'position', 'cat': 'pet', 'val': 'Cachorro', 'pos': 4},
+    {'type': 'not_position', 'cat': 'nac', 'val': 'Noruegues', 'pos': 3},
+    
+    # 2x 'neighbor'
+    {'type': 'neighbor', 'cat1': 'beb', 'val1': 'Agua', 'cat2': 'pet', 'val2': 'Peixe'},
+    {'type': 'neighbor', 'cat1': 'cig', 'val1': 'Dunhill', 'cat2': 'cor', 'val2': 'Branco'},
+    
+    # 1x 'neighbor_right_of'
+    {'type': 'neighbor_right_of', 'left_cat': 'cor', 'left_val': 'Amarelo', 'right_cat': 'cig', 'right_val': 'Dunhill'},
+
+    # 1x 'right_of'
+    {'type': 'right_of', 'left_cat': 'nac', 'left_val': 'Alemao', 'right_cat': 'beb', 'right_val': 'Cerveja'},
+    
+    # 1x 'position' para uma casa diferente
+    {'type': 'position', 'cat': 'nac', 'val': 'Ingles', 'pos': 5},
+]
+
 # Rodar experimento automaticamente
-test_instance(empty, "Instância de teste - Einstein simplificado")
+for i in range(1, 11):
+    print(f"Teste número {i}:")
+    test_instance(new_twenty_rules, "Instância de teste - Einstein simplificado")
+    print("\n")
